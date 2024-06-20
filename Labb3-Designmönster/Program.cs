@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
 
-    // Designmönster - labb 3 implementera
+    // Designmönster - labb 3 vidareutveckla
     // Emma Lind .NET23
 
     // The design pattern is Factory method
