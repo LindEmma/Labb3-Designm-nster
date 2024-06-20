@@ -3,22 +3,30 @@
     using System;
     using System.Collections.Generic;
 
+    // Designmönster - labb 3 implementera
+    // Emma Lind .NET23
+
+    // The design pattern is Factory method
+    // I added coffee, hot chocolate and cappuccino, without changing the pattern or making changes to the previous code
+
     namespace VarmDrinkStation
     {
-        // Definierar ett interface för varma drycker
+        // Interface for warm drinks
         public interface IWarmDrink
         {
-            void Consume(); // Metod för att konsumera drycken
+            void Consume(); // Method to consume the drink
         }
 
-        // Implementerar en specifik varm dryck, i detta fall vatten
+        // concrete class water, implements the Consume method
         internal class Water : IWarmDrink
         {
             public void Consume()
             {
-                Console.WriteLine("Warm water is served."); // Utskrift vid konsumtion av vatten
+                Console.WriteLine("Warm water is served."); // console output that is unique to the drink
             }
         }
+
+        // additional concrete classes coffee, cappuccino and hot chocolate
         internal class Coffee : IWarmDrink
         {
             public void Consume()
@@ -41,19 +49,19 @@
             }
         }
 
-        // Definierar ett interface för fabriker som kan skapa varma drycker
+        // Factory interface that creates the drinks
         public interface IWarmDrinkFactory
         {
-            IWarmDrink Prepare(int total); // Metod för att förbereda drycken med en specifik mängd
+            IWarmDrink Prepare(int total);
         }
 
-        // Implementerar en specifik fabrik som förbereder varmt vatten
+        // factories for each of the concrete classes
         internal class HotWaterFactory : IWarmDrinkFactory
         {
             public IWarmDrink Prepare(int total)
             {
-                Console.WriteLine($"Pour {total} ml hot water in your cup"); // Utskrift av mängden vatten som hälls upp
-                return new Water(); // Returnerar en ny instans av Water
+                Console.WriteLine($"Pour {total} ml hot water in your cup");
+                return new Water(); // Returns new instance of the class
             }
         }
         internal class CoffeeFactory : IWarmDrinkFactory
@@ -81,49 +89,48 @@
             }
         }
 
-        // Maskin som hanterar skapandet av varma drycker
+        // handles the preparation of warm drinks
         public class WarmDrinkMachine
         {
-            private readonly List<Tuple<string, IWarmDrinkFactory>> namedFactories; // Lista över fabriker med deras namn
+            private readonly List<Tuple<string, IWarmDrinkFactory>> namedFactories; // list of all factories
 
             public WarmDrinkMachine()
             {
-                namedFactories = new List<Tuple<string, IWarmDrinkFactory>>(); // Initierar listan över fabriker
+                namedFactories = new List<Tuple<string, IWarmDrinkFactory>>();
 
-                // Registrerar fabriker explicit
-                RegisterFactory<HotWaterFactory>("Hot Water"); // Registrerar fabriken för varmt vatten
+                RegisterFactory<HotWaterFactory>("Hot Water");
                 RegisterFactory<CoffeeFactory>("Coffee");
                 RegisterFactory<CappuccinoFactory>("Cappuccino");
                 RegisterFactory<HotChocolateFactory>("Hot chocolate");
             }
 
-            // Metod för att registrera en fabrik
+            // Method for registering a factory
             private void RegisterFactory<T>(string drinkName) where T : IWarmDrinkFactory, new()
             {
-                namedFactories.Add(Tuple.Create(drinkName, (IWarmDrinkFactory)Activator.CreateInstance(typeof(T)))); // Lägger till fabriken i listan
+                namedFactories.Add(Tuple.Create(drinkName, (IWarmDrinkFactory)Activator.CreateInstance(typeof(T)))); // adds factories to list namedFactories
             }
 
-            // Metod för att skapa en varm dryck
+            // method to make a drink
             public IWarmDrink MakeDrink()
             {
                 Console.WriteLine("This is what we serve today:");
                 for (var index = 0; index < namedFactories.Count; index++)
                 {
                     var tuple = namedFactories[index];
-                    Console.WriteLine($"{index}: {tuple.Item1}"); // Skriver ut tillgängliga drycker
+                    Console.WriteLine($"{index}: {tuple.Item1}"); // prints all types of warm beverages from the list
                 }
                 Console.WriteLine("Select a number to continue:");
                 while (true)
                 {
-                    if (int.TryParse(Console.ReadLine(), out int i) && i >= 0 && i < namedFactories.Count) // Läser och validerar användarens val
+                    if (int.TryParse(Console.ReadLine(), out int i) && i >= 0 && i < namedFactories.Count) // lets user choose a drink
                     {
                         Console.Write("How much: ");
-                        if (int.TryParse(Console.ReadLine(), out int total) && total > 0) // Läser och validerar mängden
+                        if (int.TryParse(Console.ReadLine(), out int total) && total > 0) // lets user choose how many ml
                         {
-                            return namedFactories[i].Item2.Prepare(total); // Förbereder och returnerar drycken
+                            return namedFactories[i].Item2.Prepare(total); // creates chosen drink with the Prepare method
                         }
                     }
-                    Console.WriteLine("Something went wrong with your input, try again."); // Meddelande vid felaktig inmatning
+                    Console.WriteLine("Something went wrong with your input, try again."); // Error message
                 }
             }
         }
@@ -132,9 +139,9 @@
         {
             static void Main(string[] args)
             {
-                var machine = new WarmDrinkMachine(); // Skapar en instans av WarmDrinkMachine
-                IWarmDrink drink = machine.MakeDrink(); // Skapar en dryck
-                drink.Consume(); // Konsumerar drycken
+                var machine = new WarmDrinkMachine(); // instantiates WarmDrinkMachine
+                IWarmDrink drink = machine.MakeDrink(); // makes drink
+                drink.Consume(); // consumes drink
             }
         }
     }
